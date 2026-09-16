@@ -1,6 +1,6 @@
 # The DBA team reviews every SQL change.
-*       @YOUR-ACCOUNT
+*       @amyabelsql
 
-*.sql                       @YOUR-ACCOUNT
-/04_Testing_With_Make/      @YOUR-ACCOUNT
-/.github/workflows/         @YOUR-ACCOUNT
+*.sql                       @amyabelsql
+/04_Testing_With_Make/      @amyabelsql
+/.github/workflows/         @amyabelsql

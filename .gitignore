@@ -27,3 +27,4 @@ __pycache__/
 bin/
 obj/
 *.dacpac
+.claude*

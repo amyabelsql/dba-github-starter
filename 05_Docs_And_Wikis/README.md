@@ -25,7 +25,7 @@ Private Pages sites need GitHub Enterprise Cloud.
 ## Push these into the wiki
 
 ```bash
-./publish_to_wiki.sh YOUR-ACCOUNT dba-github-starter
+./publish_to_wiki.sh amyabelsql dba-github-starter
 ```
 
 If you answer the same question twice, write it down.

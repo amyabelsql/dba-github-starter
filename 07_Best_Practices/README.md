@@ -16,7 +16,7 @@ Simple habits that keep your servers and scripts safe.
 Apply the branch rules and push protection:
 
 ```bash
-./harden_repo.sh YOUR-ACCOUNT dba-github-starter
+./harden_repo.sh amyabelsql dba-github-starter
 ```
 
 ## Keep automation safe

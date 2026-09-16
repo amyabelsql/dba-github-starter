@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Applies the protections from section 07.
-# Usage: ./harden_repo.sh YOUR-ACCOUNT dba-github-starter
+# Usage: ./harden_repo.sh amyabelsql dba-github-starter
 set -euo pipefail
 
 OWNER="${1:?owner required}"

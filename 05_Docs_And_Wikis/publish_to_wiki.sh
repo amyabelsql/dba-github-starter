@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copies these docs into the repo wiki.
-# Usage: ./publish_to_wiki.sh YOUR-ACCOUNT dba-github-starter
+# Usage: ./publish_to_wiki.sh amyabelsql dba-github-starter
 set -euo pipefail
 
 OWNER="${1:?owner required}"

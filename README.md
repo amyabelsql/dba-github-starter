@@ -26,6 +26,14 @@ there's no repo for the commands to talk to:
 That commits, creates a **private** repo, pushes, and adds the labels the issue
 forms and workflows expect. Safe to run twice.
 
+> Already done — this repo is live at
+> **https://github.com/amyabelsql/dba-github-starter** (private).
+>
+> Your `gh` token needs the **`workflow`** scope or the push is rejected the
+> moment it hits `.github/workflows/`. If you hit that:
+> `gh auth refresh -h github.com -s workflow`, and make sure the browser is
+> signed in as the **same account** `gh` is using.
+
 **3. Set up the test password** (section 04 only):
 
 ```bash
@@ -123,7 +131,7 @@ Open `server_diagram.md` **on GitHub** to show Mermaid rendering — it won't
 render in a plain text editor.
 
 ```bash
-./05_Docs_And_Wikis/publish_to_wiki.sh YOUR-ACCOUNT dba-github-starter
+./05_Docs_And_Wikis/publish_to_wiki.sh amyabelsql dba-github-starter
 ```
 
 The wiki must be created once in the repo's web UI first.
@@ -138,7 +146,7 @@ The wiki must be created once in the repo's web UI first.
 ### 07 — Best Practices → `07_Best_Practices/`
 
 ```bash
-./07_Best_Practices/harden_repo.sh YOUR-ACCOUNT dba-github-starter
+./07_Best_Practices/harden_repo.sh amyabelsql dba-github-starter
 ```
 
 Turns on push protection and requires a code owner review on `main`.
@@ -153,6 +161,8 @@ Turns on push protection and requires a code owner review on `main`.
 | `No .env file` | `cd 04_Testing_With_Make && cp .env.example .env` |
 | `could not determine base repository` | run `./00_Prerequisites/setup_github.sh` |
 | `gh: Not Found` on a workflow | push first — workflows must exist on GitHub |
+| `refusing to allow an OAuth App to ... workflow` | `gh auth refresh -h github.com -s workflow` |
+| `remote rejected` / `Repository not found` | `gh` account and SSH key are different people — use HTTPS: `gh auth setup-git` |
 | A workflow run sits queued forever | section 03 needs a self-hosted runner |
 | `make: *** [test] Error 1` | a test failed — that's the demo working |
 
