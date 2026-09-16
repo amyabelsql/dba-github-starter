@@ -5,7 +5,16 @@ is thrown away.
 
 ## Run it
 
+From the repo root:
+
 ```bash
+make test
+```
+
+Or from inside this folder:
+
+```bash
+cd 04_Testing_With_Make
 cp .env.example .env
 make all
 ```
@@ -30,6 +39,9 @@ Test Case Summary: 3 test case(s) executed, 3 succeeded, 0 skipped, 0 failed, 0 
 | `make test` | Downloads tSQLt, installs it, runs every test |
 | `make down` | Deletes the container and everything in it |
 
+From the repo root, prefix each with `test-`: `make test-up`, `make test-schema`,
+`make test-test`, `make test-down`.
+
 `make all` runs all four in order. `make clean` also drops the cached tSQLt copy.
 
 ## What you need
@@ -42,8 +54,9 @@ The password in `.env` is for a throwaway container — never reuse a real one.
 Break the code on purpose and run the tests again:
 
 ```bash
-# in schema/03_programmability.sql, delete this line:
+# In 04_Testing_With_Make/schema/03_programmability.sql, delete this line:
 #     AND o.IsCancelled = 0;
+cd 04_Testing_With_Make
 make up && make schema && make test
 ```
 

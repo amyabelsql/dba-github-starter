@@ -30,7 +30,7 @@ change/add-includecancelled-flag
 
 ```bash
 git switch -c change/add-includecancelled-flag
-git add scripts/usp_GetCustomerOrderTotal.sql
+git add 01_SSMS_GitHub/scripts/usp_GetCustomerOrderTotal.sql
 git commit -m "Add IncludeCancelled flag so Finance can reconcile refunds"
 git push -u origin change/add-includecancelled-flag
 gh pr create --fill

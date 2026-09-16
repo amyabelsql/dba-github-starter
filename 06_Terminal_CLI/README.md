@@ -16,8 +16,8 @@
 ## Run the demo
 
 ```bash
-./demo_commands.sh          # read-only tour, safe to run on stage
-./demo_commands.sh --write  # also creates an issue and starts a workflow
+./06_Terminal_CLI/demo_commands.sh          # read-only tour, safe on stage
+./06_Terminal_CLI/demo_commands.sh --write  # also creates an issue
 ```
 
 ## Gists for your favourite queries
@@ -26,7 +26,7 @@ A gist is a small repo for one or a few files — a good home for wait stats
 queries, login audits, and quick fixes.
 
 ```bash
-gh gist create gists/top-waits.sql --desc "Top waits since restart"
+gh gist create 06_Terminal_CLI/gists/top-waits.sql --desc "Top waits since restart"
 gh gist list
 ```
 

@@ -22,9 +22,23 @@ gh issue create --web
 
 ## Build the board
 
+One-time: project boards need a token scope the normal `gh` login does not
+ask for. Run this once, approve the code in the browser, and you never think
+about it again.
+
 ```bash
-./setup_project_board.sh
+gh auth refresh -h github.com -s project
 ```
+
+Then:
+
+```bash
+./02_Issues_And_Projects/setup_project_board.sh
+```
+
+Skipping the scope is fine - the script stops and tells you exactly this.
+Building the board in the web UI is arguably the better demo anyway, since
+the audience watches the fields appear.
 
 Columns: **Requested → Scheduled → In Progress → Done**
 Custom fields: **Server, Environment, Window date, Risk**
@@ -33,7 +47,7 @@ Views to flip between on stage: **Table, Board, Roadmap**
 ## Seed it so the board isn't empty
 
 ```bash
-./seed_demo_issues.sh
+./02_Issues_And_Projects/seed_demo_issues.sh
 ```
 
 ## Ops work that fits in issues
