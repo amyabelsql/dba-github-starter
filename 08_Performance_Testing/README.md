@@ -3,13 +3,24 @@
 Three performance problems, fixed and measured on a throwaway SQL Server.
 Everything runs offline in Docker. Nothing touches a real server.
 
+From the **repo root** (easiest — no need to be in this folder):
+
+```bash
+make perf
+```
+
+Or from inside this folder:
+
 ```bash
 cp .env.example .env
 make all
 ```
 
-About 40 seconds start to finish. Then `make down` has already cleaned up
-after you.
+Both do the same thing, in about 40 seconds. `make down` has already cleaned up
+after you when it finishes.
+
+Every step below is also available from the root with a `perf-` prefix, so
+`make sniff` here is `make perf-sniff` there.
 
 ---
 

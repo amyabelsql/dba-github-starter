@@ -17,10 +17,29 @@ endif
 include .env
 export
 
+# -l 30 is a 30 second login timeout. SQL Server in a container will
+# occasionally refuse a connection even when it is healthy, and the default
+# timeout is short enough that one blip kills a demo. This rides it out.
 SQLCMD = docker exec -i $(SQL_CONTAINER) /opt/mssql-tools18/bin/sqlcmd \
-	-S localhost -U sa -P "$(SA_PASSWORD)" -C -b
+	-S localhost -U sa -P "$(SA_PASSWORD)" -C -b -l 30
+
+# The readiness probe wants the opposite: fail fast so the wait loop can spin.
+PROBE = docker exec -i $(SQL_CONTAINER) /opt/mssql-tools18/bin/sqlcmd \
+	-S localhost -U sa -P "$(SA_PASSWORD)" -C -b -l 3 -t 3
 
 TSQLT_URL = https://tsqlt.org/download/tsqlt/
+
+# A connection to SQL Server in a container will occasionally blip, even when
+# the server is perfectly healthy. Losing a demo to that is not acceptable, so
+# every script runs through this: try, wait, try again, then give up honestly.
+define retry
+@for attempt in 1 2 3; do \
+	if $(1); then exit 0; fi; \
+	echo "  connection blip, retry $$attempt of 3 ..." >&2; \
+	sleep 5; \
+done; \
+echo "Failed after 3 attempts. Try: make down && make up" >&2; exit 1
+endef
 
 .DEFAULT_GOAL := help
 .PHONY: help up schema test down all clean
@@ -28,21 +47,25 @@ TSQLT_URL = https://tsqlt.org/download/tsqlt/
 help: ## Show these commands
 	@grep -hE '^[a-z]+:.*##' Makefile | sort | awk 'BEGIN{FS=":.*##"}{printf "  make %-7s %s\n", $$1, $$2}'
 
-up: ## Start SQL Server and wait until it answers
+up: ## Start SQL Server and wait until it is genuinely ready
 	@docker compose up -d --quiet-pull
 	@printf "Waiting for SQL Server"
-	@for i in $$(seq 1 60); do \
-		if $(SQLCMD) -Q "SELECT 1" >/dev/null 2>&1; then \
-			echo " ready."; exit 0; \
+	@ok=0; \
+	for i in $$(seq 1 90); do \
+		if $(PROBE) -Q "SELECT 1 FROM sys.databases WHERE name = 'tempdb' AND state_desc = 'ONLINE'" >/dev/null 2>&1; then \
+			ok=$$((ok + 1)); \
+		else \
+			ok=0; \
 		fi; \
+		if [ $$ok -ge 3 ]; then echo " ready."; exit 0; fi; \
 		printf "."; sleep 2; \
 	done; \
-	echo; echo "SQL Server did not come up in time." >&2; exit 1
+	echo; echo "SQL Server did not come up in time. Try: make down && make up" >&2; exit 1
 
 schema: ## Create the test database and apply the change scripts
-	@$(SQLCMD) -i /dev/stdin < schema/01_create_database.sql
-	@$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < schema/02_tables.sql
-	@$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < schema/03_programmability.sql
+	$(call retry,$(SQLCMD) -i /dev/stdin < schema/01_create_database.sql)
+	$(call retry,$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < schema/02_tables.sql)
+	$(call retry,$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < schema/03_programmability.sql)
 
 # Downloaded once, then cached. `make clean` removes it.
 # unzip exits 1 on the harmless "backslashes as path separators" warning,
@@ -58,9 +81,9 @@ tests/tSQLt.class.sql:
 	@echo "tSQLt ready."
 
 test: tests/tSQLt.class.sql ## Install tSQLt and run every test
-	@$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < tests/tSQLt.class.sql > /dev/null
-	@$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < tests/OrderTests.sql
-	@$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < tests/run_tests.sql
+	$(call retry,$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < tests/tSQLt.class.sql > /dev/null)
+	$(call retry,$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < tests/OrderTests.sql)
+	$(call retry,$(SQLCMD) -d $(TEST_DB) -i /dev/stdin < tests/run_tests.sql)
 
 down: ## Delete the container and everything in it
 	@docker compose down -v --remove-orphans

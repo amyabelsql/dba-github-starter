@@ -4,6 +4,14 @@ Demo repo for **Days of Data Boston 2026** — Amy Abel.
 
 Every folder is one section of the talk, in the order you present it.
 
+**Run everything from this folder.** `make` on its own lists every demo:
+
+```bash
+make          # show all commands
+make perf     # the performance demos
+make test     # the database tests
+```
+
 ---
 
 ## Start here
@@ -34,14 +42,16 @@ forms and workflows expect. Safe to run twice.
 > `gh auth refresh -h github.com -s workflow`, and make sure the browser is
 > signed in as the **same account** `gh` is using.
 
-**3. Set up the test passwords** (the two Docker sections):
+**3. Set up the test passwords** for the two Docker sections:
 
 ```bash
-cd 04_Testing_With_Make   && cp .env.example .env && cd ..
-cd 08_Performance_Testing && cp .env.example .env && cd ..
+make setup
 ```
 
-Re-run `./00_Prerequisites/check.sh` — everything should be green.
+Re-run `make check` — everything should be green.
+
+`make perf` and `make test` call `make setup` for you, so if you forget this
+step nothing breaks.
 
 ---
 
@@ -108,6 +118,9 @@ that's expected, not a bug. To demo the PowerShell alone:
 
 ### 04 — Testing with Make → `04_Testing_With_Make/`
 
+From the repo root: `make test`, or step by step with `make test-up`,
+`make test-schema`, `make test-test`, `make test-down`.
+
 The one that runs fully offline. Docker must be running.
 
 ```bash
@@ -158,21 +171,26 @@ Turns on push protection and requires a code owner review on `main`.
 Prove a performance change instead of arguing about it. Runs offline.
 
 ```bash
-cd 08_Performance_Testing
-make up          # SQL Server 2022 in Docker
-make data        # 400,000 orders, deliberately skewed
-make before      # measure the slow code
-make fix         # remove the unused LEFT JOIN, add the index
-make after       # measure again
-make compare     # side by side, plus proof the answer didn't change
-make sniff       # parameter sniffing: 755x more reads, same answer
-make sniff-fixed # OPTION (RECOMPILE)
-make qs          # what Query Store recorded
-make down
+make perf          # the whole story, about 40 seconds
 ```
 
-`make all` runs the lot in about 40 seconds. Measured in logical reads, not
-wall clock, so the numbers are identical every run.
+One step at a time, which is how you want it on stage:
+
+```bash
+make perf-up            # start SQL Server
+make perf-data          # 400,000 orders, deliberately skewed
+make perf-before        # measure the slow code
+make perf-fix           # remove the unused LEFT JOIN, add the index
+make perf-after         # measure again
+make perf-compare       # side by side + proof the answer didn't change
+make perf-sniff         # parameter sniffing: 755x more reads, same answer
+make perf-sniff-fixed   # OPTION (RECOMPILE)
+make perf-qs            # what Query Store recorded
+make perf-down          # tear it down
+```
+
+Measured in logical reads, not wall clock, so the numbers are identical every
+run — on your laptop and in CI.
 
 | Fix | Before | After |
 |---|---|---|
@@ -187,7 +205,9 @@ wall clock, so the numbers are identical every run.
 | What you see | Fix |
 |---|---|
 | `Cannot connect to the Docker daemon` | start Docker Desktop or `open -a OrbStack` |
-| `No .env file` | `cp .env.example .env` in `04_Testing_With_Make` or `08_Performance_Testing` |
+| `No .env file` | `make setup` from the repo root |
+| `No rule to make target` | you're in the wrong folder — run `make` from the repo root |
+| `Login timeout expired` | a container blip; it retries 3 times, then `make down && make perf` |
 | `could not determine base repository` | run `./00_Prerequisites/setup_github.sh` |
 | `gh: Not Found` on a workflow | push first — workflows must exist on GitHub |
 | `refusing to allow an OAuth App to ... workflow` | `gh auth refresh -h github.com -s workflow` |
