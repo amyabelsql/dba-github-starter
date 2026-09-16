@@ -173,6 +173,11 @@ than one plan — and it hands you the exact command to pin the good one:
 EXEC sys.sp_query_store_force_plan @query_id = 30, @plan_id = 32;
 ```
 
+Ignore the `AvgMs` column while you are on stage. It includes compile time and
+whatever else the laptop was doing, so it swings wildly between runs. `AvgReads`
+is the column that says the same thing every time. That is the whole argument of
+this section, showing up one more time.
+
 Two notes that matter on a real server:
 
 - The report runs `sys.sp_query_store_flush_db` first. Query Store writes
