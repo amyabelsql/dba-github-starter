@@ -24,8 +24,15 @@ Private Pages sites need GitHub Enterprise Cloud.
 
 ## Push these into the wiki
 
+One-time: GitHub does not create the wiki's git repo until a first page
+exists. Open `https://github.com/<owner>/<repo>/wiki`, click **Create the
+first page**, and save anything. Then:
+
 ```bash
-./publish_to_wiki.sh amyabelsql dba-github-starter
+./05_Docs_And_Wikis/publish_to_wiki.sh amyabelsql dba-github-starter
 ```
+
+Run it before that and the script stops with those instructions rather than
+a confusing "Repository not found".
 
 If you answer the same question twice, write it down.

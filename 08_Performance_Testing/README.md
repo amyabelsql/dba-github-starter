@@ -12,6 +12,7 @@ make perf
 Or from inside this folder:
 
 ```bash
+cd 08_Performance_Testing
 cp .env.example .env
 make all
 ```
@@ -111,7 +112,7 @@ lopsided — 399,960 rows are status 1, and 40 rows are status 9. There is a
 narrow, non-covering index on `StatusId`.
 
 ```bash
-make sniff
+make perf-sniff          # from the repo root
 ```
 
 ```
@@ -135,7 +136,7 @@ which query got there first after a restart, a failover, or a statistics update.
 ### The fix
 
 ```bash
-make sniff-fixed
+make perf-sniff-fixed    # from the repo root
 ```
 
 ```
@@ -160,7 +161,7 @@ The alternatives, and when to reach for them:
 ## Demo 4 — what Query Store saw
 
 ```bash
-make qs
+make perf-qs             # from the repo root
 ```
 
 ```
