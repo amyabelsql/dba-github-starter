@@ -19,7 +19,7 @@ gh api -X PUT "repos/$OWNER/$REPO/branches/main/protection" \
     "strict": true,
     "contexts": ["Style check", "Database tests"]
   },
-  "enforce_admins": true,
+  "enforce_admins": false,
   "required_pull_request_reviews": {
     "required_approving_review_count": 1,
     "require_code_owner_reviews": true
@@ -31,3 +31,8 @@ gh api -X PUT "repos/$OWNER/$REPO/branches/main/protection" \
 JSON
 
 echo "Done. main now requires a code owner review and green checks."
+echo
+echo "Note: enforce_admins is off on purpose. On a solo repo you cannot approve"
+echo "your own pull request, so leaving it on would lock you out of your own"
+echo "main branch. Admins can still merge with 'gh pr merge --admin', and every"
+echo "override is recorded in the audit log."
