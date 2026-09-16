@@ -34,10 +34,11 @@ forms and workflows expect. Safe to run twice.
 > `gh auth refresh -h github.com -s workflow`, and make sure the browser is
 > signed in as the **same account** `gh` is using.
 
-**3. Set up the test password** (section 04 only):
+**3. Set up the test passwords** (the two Docker sections):
 
 ```bash
-cd 04_Testing_With_Make && cp .env.example .env && cd ..
+cd 04_Testing_With_Make   && cp .env.example .env && cd ..
+cd 08_Performance_Testing && cp .env.example .env && cd ..
 ```
 
 Re-run `./00_Prerequisites/check.sh` — everything should be green.
@@ -56,8 +57,9 @@ Re-run `./00_Prerequisites/check.sh` — everything should be green.
 | 05 Docs and Wikis | no | yes, to see it render |
 | 06 Terminal CLI | no | **yes** |
 | 07 Best Practices | no | yes |
+| 08 Performance Testing | **yes** | no |
 
-Sections 04 and the database project run fully offline. Everything else talks to
+Sections 04, 08 and the database project run fully offline. Everything else talks to
 GitHub.
 
 ---
@@ -151,6 +153,33 @@ The wiki must be created once in the repo's web UI first.
 
 Turns on push protection and requires a code owner review on `main`.
 
+### 08 — Performance Testing → `08_Performance_Testing/`
+
+Prove a performance change instead of arguing about it. Runs offline.
+
+```bash
+cd 08_Performance_Testing
+make up          # SQL Server 2022 in Docker
+make data        # 400,000 orders, deliberately skewed
+make before      # measure the slow code
+make fix         # remove the unused LEFT JOIN, add the index
+make after       # measure again
+make compare     # side by side, plus proof the answer didn't change
+make sniff       # parameter sniffing: 755x more reads, same answer
+make sniff-fixed # OPTION (RECOMPILE)
+make qs          # what Query Store recorded
+make down
+```
+
+`make all` runs the lot in about 40 seconds. Measured in logical reads, not
+wall clock, so the numbers are identical every run.
+
+| Fix | Before | After |
+|---|---|---|
+| Removed unused LEFT JOIN | 13,488 reads | 1,372 reads |
+| Added covering index | 1,688 reads | 14 reads |
+| Parameter sniffing | 1,275,570 reads | 1,688 reads |
+
 ---
 
 ## If something doesn't work
@@ -158,7 +187,7 @@ Turns on push protection and requires a code owner review on `main`.
 | What you see | Fix |
 |---|---|
 | `Cannot connect to the Docker daemon` | start Docker Desktop or `open -a OrbStack` |
-| `No .env file` | `cd 04_Testing_With_Make && cp .env.example .env` |
+| `No .env file` | `cp .env.example .env` in `04_Testing_With_Make` or `08_Performance_Testing` |
 | `could not determine base repository` | run `./00_Prerequisites/setup_github.sh` |
 | `gh: Not Found` on a workflow | push first — workflows must exist on GitHub |
 | `refusing to allow an OAuth App to ... workflow` | `gh auth refresh -h github.com -s workflow` |

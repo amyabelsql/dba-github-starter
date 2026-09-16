@@ -6,3 +6,8 @@
 07_Best_Practices/safe_script_template.sql
 #   tSQLt test classes use bracketed procedure names
 04_Testing_With_Make/tests/
+#   DBCC FREEPROCCACHE WITH NO_INFOMSGS
+08_Performance_Testing/bench/parameter_sniffing.sql
+08_Performance_Testing/schema/04_measure_harness.sql
+#   ALTER DATABASE ... SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+08_Performance_Testing/schema/01_create_database.sql

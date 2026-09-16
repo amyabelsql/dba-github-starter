@@ -1,0 +1,55 @@
+name: Performance Check
+
+# Runs the before/after benchmark and posts the table into the run summary,
+# so a reviewer sees the numbers instead of taking your word for it.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '08_Performance_Testing/**'
+
+jobs:
+  benchmark:
+    name: Measure before and after
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 08_Performance_Testing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create the test password file
+        run: cp .env.example .env
+
+      - name: Start SQL Server
+        run: make up
+
+      - name: Load data and deploy the slow code
+        run: make data
+
+      - name: Measure before
+        run: make before
+
+      - name: Apply the fixes
+        run: make fix
+
+      - name: Measure after
+        run: make after
+
+      - name: Prove the answer did not change
+        run: make compare
+
+      - name: Write the numbers to the run summary
+        run: |
+          {
+            echo "## Performance check"
+            echo
+            make ci
+            echo
+            echo "Measured in logical reads, averaged over 5 executions."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tear down
+        if: always()
+        run: make down

@@ -52,12 +52,14 @@ else
 fi
 
 echo
-echo "Section 04 config"
-if [ -f "$REPO_ROOT/04_Testing_With_Make/.env" ]; then
-  ok ".env exists"
-else
-  bad "04_Testing_With_Make/.env missing" "cd 04_Testing_With_Make && cp .env.example .env"
-fi
+echo "Docker section config"
+for section in 04_Testing_With_Make 08_Performance_Testing; do
+  if [ -f "$REPO_ROOT/$section/.env" ]; then
+    ok "$section/.env exists"
+  else
+    bad "$section/.env missing" "cd $section && cp .env.example .env"
+  fi
+done
 
 echo
 if [ "$FAIL" -eq 0 ]; then
