@@ -1,0 +1,82 @@
+name: Database Change Request
+description: Request a change to a SQL Server database
+title: "[Change] "
+labels: ["change-request", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill this in before the change window. Anything marked * is required.
+
+  - type: input
+    id: server
+    attributes:
+      label: Server
+      placeholder: SQL01
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - DEV
+        - TEST
+        - PROD
+    validations:
+      required: true
+
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options:
+        - Low - read only or additive
+        - Medium - changes existing objects
+        - High - data movement or downtime
+    validations:
+      required: true
+
+  - type: input
+    id: rollback-owner
+    attributes:
+      label: Rollback owner
+      placeholder: "@amy"
+    validations:
+      required: true
+
+  - type: input
+    id: window
+    attributes:
+      label: Change window
+      placeholder: 2026-03-14 22:00 America/New_York
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: What is changing and why
+    validations:
+      required: true
+
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback plan
+      description: Write this now, not during the outage.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Before you submit
+      options:
+        - label: A recent backup is verified
+          required: true
+        - label: The script can be run twice safely
+          required: true
+        - label: A second DBA has reviewed it
+          required: true

@@ -1,0 +1,45 @@
+name: Build Database Project
+
+on:
+  pull_request:
+    paths:
+      - "01_SSMS_GitHub/database_devops/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-dacpac:
+    name: Build dacpac
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 01_SSMS_GitHub/database_devops
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      # An unresolved column or a typo fails here, before it reaches a server.
+      - name: Build the project
+        run: dotnet build --configuration Release
+
+      - name: Save the dacpac
+        uses: actions/upload-artifact@v4
+        with:
+          name: DemoDb-dacpac
+          path: 01_SSMS_GitHub/database_devops/bin/Release/DemoDb.dacpac
+
+      # Produces the change script for a human to read. It does not deploy.
+      - name: Generate the deployment script
+        run: |
+          dotnet tool install -g microsoft.sqlpackage --version 170.5.76
+          echo "sqlpackage installed. On a runner that can reach SQL, run:"
+          echo "  sqlpackage /Action:Script \\"
+          echo "    /SourceFile:bin/Release/DemoDb.dacpac \\"
+          echo "    /Profile:DemoDb.publish.xml \\"
+          echo "    /TargetConnectionString:\"\$SQL_CONNECTION\" \\"
+          echo "    /OutputPath:DemoDb.sql"

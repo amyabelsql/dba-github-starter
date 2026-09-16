@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: DBA team runbooks
+    url: https://github.com/YOUR-ACCOUNT/dba-github-starter/wiki
+    about: Check the wiki before opening an issue.

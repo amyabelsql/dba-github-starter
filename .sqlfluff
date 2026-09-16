@@ -1,0 +1,15 @@
+[sqlfluff]
+dialect = tsql
+templater = raw
+max_line_length = 120
+
+# Layout rules fight normal T-SQL formatting (GO batches, aligned aliases),
+# so this config checks what actually matters: keyword casing, explicit table
+# aliases, unique column aliases, and no SELECT *.
+rules = capitalisation.keywords, aliasing.table, aliasing.unique.column, ambiguous.column_count
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = upper
+
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit

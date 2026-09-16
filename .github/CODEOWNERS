@@ -1,0 +1,6 @@
+# The DBA team reviews every SQL change.
+*       @YOUR-ACCOUNT
+
+*.sql                       @YOUR-ACCOUNT
+/04_Testing_With_Make/      @YOUR-ACCOUNT
+/.github/workflows/         @YOUR-ACCOUNT

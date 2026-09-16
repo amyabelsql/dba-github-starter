@@ -1,0 +1,22 @@
+{
+  "name": "DBA GitHub Starter",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    }
+  },
+  "postCreateCommand": "pip install sqlfluff==3.2.5 && pwsh -Command \"Install-Module SqlServer -Force -Scope CurrentUser\"",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-mssql.mssql",
+        "ms-vscode.powershell",
+        "github.vscode-github-actions"
+      ]
+    }
+  }
+}

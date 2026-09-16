@@ -1,0 +1,65 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    paths:
+      - "**/*.sql"
+      - "04_Testing_With_Make/**"
+      - ".github/workflows/pr-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  style:
+    name: Style check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install sqlfluff==3.2.5
+
+      - name: Lint the SQL
+        run: sqlfluff lint 04_Testing_With_Make/schema 01_SSMS_GitHub/scripts
+
+  database-tests:
+    name: Database tests
+    runs-on: ubuntu-latest
+    env:
+      SA_PASSWORD: ${{ secrets.TEST_SA_PASSWORD || 'Str0ng!DemoPassw0rd' }}
+      SQL_PORT: "14333"
+      SQL_CONTAINER: pr-test-sql
+      TEST_DB: DemoDb
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write the .env the Makefile expects
+        working-directory: 04_Testing_With_Make
+        run: |
+          {
+            echo "SA_PASSWORD=$SA_PASSWORD"
+            echo "SQL_PORT=$SQL_PORT"
+            echo "SQL_CONTAINER=$SQL_CONTAINER"
+            echo "TEST_DB=$TEST_DB"
+          } > .env
+
+      - name: Start SQL Server
+        working-directory: 04_Testing_With_Make
+        run: make up
+
+      - name: Build the database
+        working-directory: 04_Testing_With_Make
+        run: make schema
+
+      - name: Run the tests
+        working-directory: 04_Testing_With_Make
+        run: make test
+
+      - name: Remove SQL Server
+        if: always()
+        working-directory: 04_Testing_With_Make
+        run: make down

@@ -1,0 +1,29 @@
+# Never commit these
+*.bak
+*.trn
+*.mdf
+*.ldf
+.env
+*.env
+secrets.*
+
+# tSQLt is downloaded on demand
+04_Testing_With_Make/tests/tSQLt.class.sql
+
+# Reports written by the backup check
+backup-check-report.md
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+.venv/
+
+# Database project build output
+bin/
+obj/
+*.dacpac

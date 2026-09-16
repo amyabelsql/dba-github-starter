@@ -1,0 +1,55 @@
+name: Nightly Backup Check
+
+on:
+  schedule:
+    # 11:00 UTC = 7:00 AM Boston (EDT). Schedules are always UTC.
+    - cron: "0 11 * * *"
+  workflow_dispatch:
+    inputs:
+      full_hours:
+        description: Hours allowed since the last full backup
+        default: "26"
+      log_minutes:
+        description: Minutes allowed since the last log backup
+        default: "60"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  backup-check:
+    # A runner inside your network, so it can reach the SQL Servers.
+    runs-on: [self-hosted, windows, sql]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check last backup times in msdb
+        id: check
+        shell: pwsh
+        env:
+          SQL_CHECK_CONNECTION: ${{ secrets.SQL_CHECK_CONNECTION }}
+        run: |
+          ./03_Actions_Automation/scripts/Invoke-BackupCheck.ps1 `
+            -SqlInstance $env:SQL_CHECK_CONNECTION `
+            -FullBackupHours ${{ inputs.full_hours || 26 }} `
+            -LogBackupMinutes ${{ inputs.log_minutes || 60 }} `
+            -GitHubOutput $env:GITHUB_OUTPUT
+
+      - name: Open an issue if a backup is late
+        if: steps.check.outputs.late_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh issue create `
+            --title "Backup check failed on $(Get-Date -Format 'yyyy-MM-dd')" `
+            --label backup-alert `
+            --body-file backup-check-report.md
+
+      - name: Save the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-check-report
+          path: backup-check-report.md

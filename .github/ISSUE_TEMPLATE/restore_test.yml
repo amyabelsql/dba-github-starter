@@ -1,0 +1,53 @@
+name: Restore Test
+description: Record a restore verification test
+title: "[Restore Test] "
+labels: ["restore-test"]
+body:
+  - type: input
+    id: server
+    attributes:
+      label: Source server
+      placeholder: SQL01
+    validations:
+      required: true
+
+  - type: input
+    id: database
+    attributes:
+      label: Database
+      placeholder: Sales
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: Restore target
+      placeholder: SQLTEST01
+    validations:
+      required: true
+
+  - type: input
+    id: backup-date
+    attributes:
+      label: Backup taken
+      placeholder: 2026-03-13 23:00
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: results
+    attributes:
+      label: Test results
+      options:
+        - label: Restore finished without errors
+        - label: DBCC CHECKDB is clean
+        - label: Row counts match the source
+        - label: Restore time recorded below
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Restore time and notes
+    validations:
+      required: true

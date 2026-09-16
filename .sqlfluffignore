@@ -1,0 +1,8 @@
+# SQLFluff's tsql dialect can't parse these constructs yet.
+# They are still valid T-SQL - they just aren't style checked.
+#   ALTER DATABASE ... SET TRUSTWORTHY ON
+04_Testing_With_Make/schema/01_create_database.sql
+#   WHILE ... UPDATE TOP (@var)
+07_Best_Practices/safe_script_template.sql
+#   tSQLt test classes use bracketed procedure names
+04_Testing_With_Make/tests/
